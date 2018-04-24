@@ -34,6 +34,7 @@ const (
 
 	SERVICE_GITLAB    = "gitlab"
 	SERVICE_GOOGLE    = "google"
+	SERVICE_ELION     = "elion"
 	SERVICE_OFFICE365 = "office365"
 
 	GENERIC_NO_CHANNEL_NOTIFICATION = "generic_no_channel"
@@ -1768,6 +1769,7 @@ type Config struct {
 	AnnouncementSettings  AnnouncementSettings
 	ThemeSettings         ThemeSettings
 	GitLabSettings        SSOSettings
+	ElionSettings         SSOSettings
 	GoogleSettings        SSOSettings
 	Office365Settings     SSOSettings
 	LdapSettings          LdapSettings
@@ -1803,6 +1805,8 @@ func (o *Config) ToJson() string {
 
 func (o *Config) GetSSOService(service string) *SSOSettings {
 	switch service {
+	case SERVICE_ELION:
+		return &o.ElionSettings
 	case SERVICE_GITLAB:
 		return &o.GitLabSettings
 	case SERVICE_GOOGLE:
@@ -2333,6 +2337,10 @@ func (o *Config) Sanitize() {
 
 	if len(o.GitLabSettings.Secret) > 0 {
 		o.GitLabSettings.Secret = FAKE_SETTING
+	}
+
+	if len(o.ElionSettings.Secret) > 0 {
+		o.ElionSettings.Secret = FAKE_SETTING
 	}
 
 	*o.SqlSettings.DataSource = FAKE_SETTING

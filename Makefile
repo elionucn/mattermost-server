@@ -313,7 +313,7 @@ check-licenses: ## Checks license status.
 
 check-prereqs: ## Checks prerequisite software status.
 	./scripts/prereq-check.sh
-	
+
 check-style: govet gofmt check-licenses ## Runs govet and gofmt against all packages.
 
 test-te-race: ## Checks for race conditions in the team edition.
@@ -402,7 +402,7 @@ test-data: start-docker ## Add test data to the local instance.
 	@echo Login with a regular account username=user-1 password=user-1
 	@echo ========================================================================
 
-run-server: start-docker ## Starts the server.
+run-server: #start-docker ## Starts the server.
 	@echo Running mattermost for development
 
 	mkdir -p $(BUILD_WEBAPP_DIR)/dist/files

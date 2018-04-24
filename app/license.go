@@ -47,7 +47,6 @@ func (a *App) LoadLicense() {
 
 func (a *App) SaveLicense(licenseBytes []byte) (*model.License, *model.AppError) {
 	var license *model.License
-
 	if success, licenseStr := utils.ValidateLicense(licenseBytes); success {
 		license = model.LicenseFromJson(strings.NewReader(licenseStr))
 

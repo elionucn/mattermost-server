@@ -178,7 +178,7 @@ Examples:
 Arguments:
   from_auth:
     The authentication service to migrate users accounts from.
-    Supported options: email, gitlab, ldap, saml.
+    Supported options: email, gitlab, elion, ldap, saml.
 
   to_auth:
     The authentication service to migrate users to.
@@ -202,7 +202,7 @@ Examples:
 Arguments:
   from_auth:
     The authentication service to migrate users accounts from.
-    Supported options: email, gitlab, ldap, saml.
+    Supported options: email, gitlab, elion, ldap, saml.
 
   to_auth:
     The authentication service to migrate users to.
@@ -570,7 +570,8 @@ func migrateAuthToLdapCmdF(command *cobra.Command, args []string) error {
 	fromAuth := args[0]
 	matchField := args[2]
 
-	if len(fromAuth) == 0 || (fromAuth != "email" && fromAuth != "gitlab" && fromAuth != "saml") {
+	if len(fromAuth) == 0 || (fromAuth != "email" &&
+		fromAuth != "gitlab" && fromAuth != "elion" && fromAuth != "saml") {
 		return errors.New("Invalid from_auth argument")
 	}
 
@@ -623,7 +624,8 @@ func migrateAuthToSamlCmdF(command *cobra.Command, args []string) error {
 
 	fromAuth := args[0]
 
-	if len(fromAuth) == 0 || (fromAuth != "email" && fromAuth != "gitlab" && fromAuth != "ldap") {
+	if len(fromAuth) == 0 || (fromAuth != "email" && fromAuth != "gitlab" &&
+		fromAuth != "elion" && fromAuth != "ldap") {
 		return errors.New("Invalid from_auth argument")
 	}
 

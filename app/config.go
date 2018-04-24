@@ -244,6 +244,10 @@ func (a *App) Desanitize(cfg *model.Config) {
 		cfg.GitLabSettings.Secret = actual.GitLabSettings.Secret
 	}
 
+	if cfg.ElionSettings.Secret == model.FAKE_SETTING {
+		cfg.ElionSettings.Secret = actual.ElionSettings.Secret
+	}
+
 	if *cfg.SqlSettings.DataSource == model.FAKE_SETTING {
 		*cfg.SqlSettings.DataSource = *actual.SqlSettings.DataSource
 	}

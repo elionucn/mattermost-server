@@ -228,6 +228,15 @@
         "TokenEndpoint": "",
         "UserApiEndpoint": ""
     },
+    "ElionSettings": {
+        "Enable": false,
+        "Secret": "",
+        "Id": "",
+        "Scope": "profile email",
+        "AuthEndpoint": "https://id.elion.education/oauth2",
+        "TokenEndpoint": "https://id.elion.education/oauth2/access_token",
+        "UserApiEndpoint": "https://id.elion.education/oauth2/user_info"
+    },
     "GoogleSettings": {
         "Enable": false,
         "Secret": "",

@@ -1,0 +1,22 @@
+{
+    "id": "ykodxayxqid73jm3e33e5bneec",
+    "issued_at": 1524020215256,
+    "starts_at": 1524020215256,
+    "expires_at": 4679697415256,
+    "customer": {
+        "id": "elion",
+        "name": "Elión",
+        "email": "camilo.aguilar@gmail.com"
+    },
+    "features": {
+        "users": 999999,
+        "metrics": true,
+        "custom_brand": true,
+        "elastic_search": true,
+        "announcement": true,
+        "theme_management": true,
+        "email_notification_contents": true,
+        "data_retention": true,
+        "message_export": true
+    }
+}
