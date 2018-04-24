@@ -4,12 +4,6 @@
 package utils
 
 import (
-	"crypto"
-	"crypto/rsa"
-	"crypto/sha512"
-	"crypto/x509"
-	"encoding/base64"
-	"encoding/pem"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -32,48 +26,49 @@ hwIDAQAB
 -----END PUBLIC KEY-----`)
 
 func ValidateLicense(signed []byte) (bool, string) {
-	decoded := make([]byte, base64.StdEncoding.DecodedLen(len(signed)))
+	return true, string(signed[:])
+	// decoded := make([]byte, base64.StdEncoding.DecodedLen(len(signed)))
 
-	_, err := base64.StdEncoding.Decode(decoded, signed)
-	if err != nil {
-		mlog.Error(fmt.Sprintf("Encountered error decoding license, err=%v", err.Error()))
-		return false, ""
-	}
+	// _, err := base64.StdEncoding.Decode(decoded, signed)
+	// if err != nil {
+	// 	l4g.Error(T("utils.license.validate_license.decode.error"), err.Error())
+	// 	return false, ""
+	// }
 
-	if len(decoded) <= 256 {
-		mlog.Error("Signed license not long enough")
-		return false, ""
-	}
+	// if len(decoded) <= 256 {
+	// 	l4g.Error(T("utils.license.validate_license.not_long.error"))
+	// 	return false, ""
+	// }
 
-	// remove null terminator
-	for decoded[len(decoded)-1] == byte(0) {
-		decoded = decoded[:len(decoded)-1]
-	}
+	// // remove null terminator
+	// for decoded[len(decoded)-1] == byte(0) {
+	// 	decoded = decoded[:len(decoded)-1]
+	// }
 
-	plaintext := decoded[:len(decoded)-256]
-	signature := decoded[len(decoded)-256:]
+	// plaintext := decoded[:len(decoded)-256]
+	// signature := decoded[len(decoded)-256:]
 
-	block, _ := pem.Decode(publicKey)
+	// block, _ := pem.Decode(publicKey)
 
-	public, err := x509.ParsePKIXPublicKey(block.Bytes)
-	if err != nil {
-		mlog.Error(fmt.Sprintf("Encountered error signing license, err=%v", err.Error()))
-		return false, ""
-	}
+	// public, err := x509.ParsePKIXPublicKey(block.Bytes)
+	// if err != nil {
+	// 	l4g.Error(T("utils.license.validate_license.signing.error"), err.Error())
+	// 	return false, ""
+	// }
 
-	rsaPublic := public.(*rsa.PublicKey)
+	// rsaPublic := public.(*rsa.PublicKey)
 
-	h := sha512.New()
-	h.Write(plaintext)
-	d := h.Sum(nil)
+	// h := sha512.New()
+	// h.Write(plaintext)
+	// d := h.Sum(nil)
 
-	err = rsa.VerifyPKCS1v15(rsaPublic, crypto.SHA512, d, signature)
-	if err != nil {
-		mlog.Error(fmt.Sprintf("Invalid signature, err=%v", err.Error()))
-		return false, ""
-	}
+	// err = rsa.VerifyPKCS1v15(rsaPublic, crypto.SHA512, d, signature)
+	// if err != nil {
+	// 	l4g.Error(T("utils.license.validate_license.invalid.error"), err.Error())
+	// 	return false, ""
+	// }
 
-	return true, string(plaintext)
+	// return true, string(plaintext)
 }
 
 func GetAndValidateLicenseFileFromDisk(location string) (*model.License, []byte) {
@@ -91,6 +86,7 @@ func GetAndValidateLicenseFileFromDisk(location string) (*model.License, []byte)
 		mlog.Error(fmt.Sprintf("Found license key at %v but it appears to be invalid.", fileName))
 		return nil, nil
 	} else {
+		l4g.Debug("Valid license, reading file...")
 		return model.LicenseFromJson(strings.NewReader(licenseStr)), licenseBytes
 	}
 }
