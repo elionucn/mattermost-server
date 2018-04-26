@@ -6,8 +6,10 @@ package oauthelion
 import (
 	"encoding/json"
 	"io"
-	"strconv"
 	"strings"
+	"time"
+
+	l4g "github.com/alecthomas/log4go"
 
 	"github.com/mattermost/mattermost-server/einterfaces"
 	"github.com/mattermost/mattermost-server/model"
@@ -15,12 +17,26 @@ import (
 
 type ElionProvider struct{}
 
+type ElionUserProfileImage struct {
+	Full     string `json:"image_url_full"`
+	Large    string `json:"image_url_large"`
+	Medium   string `json:"image_url_medium"`
+	Small    string `json:"image_url_small"`
+	HasImage bool   `json:"has_image"`
+}
+
 type ElionUser struct {
-	Id       int64  `json:"id"`
-	Username string `json:"username"`
-	Login    string `json:"login"`
-	Email    string `json:"email"`
-	Name     string `json:"name"`
+	Username       string                `json:"username"`
+	Bio            string                `json:"bio"`
+	Name           string                `json:"name"`
+	Email          string                `json:"email"`
+	Country        string                `json:"country"`
+	ProfileImage   ElionUserProfileImage `json:"profile_image"`
+	YearOfBirth    int                   `json:"year_of_birth"`
+	EducationLevel string                `json:"level_of_education"`
+	Languages      []map[string]string   `json:"language_proeficiencies"`
+	Gender         string                `json:"gender"`
+	DateJoined     time.Time             `json:"date_joined"`
 }
 
 func init() {
@@ -31,9 +47,6 @@ func init() {
 func userFromElionUser(glu *ElionUser) *model.User {
 	user := &model.User{}
 	username := glu.Username
-	if username == "" {
-		username = glu.Login
-	}
 	user.Username = model.CleanUsername(username)
 	splitName := strings.Split(glu.Name, " ")
 	if len(splitName) == 2 {
@@ -46,35 +59,44 @@ func userFromElionUser(glu *ElionUser) *model.User {
 		user.FirstName = glu.Name
 	}
 	user.Email = glu.Email
-	userId := strconv.FormatInt(glu.Id, 10)
-	user.AuthData = &userId
+	user.AuthData = &user.Username
 	user.AuthService = model.USER_AUTH_SERVICE_ELION
+	if len(glu.Languages) > 0 {
+		user.Locale = glu.Languages[0]["code"]
+	}
 
 	return user
 }
 
 func elionUserFromJson(data io.Reader) *ElionUser {
+	// Uncomment to take a peek into the JSON response.
+	// buf := new(bytes.Buffer)
+	// buf.ReadFrom(data)
+	// s := buf.String()
+	// l4g.Info(s)
+
 	decoder := json.NewDecoder(data)
-	var glu ElionUser
+	var glu []ElionUser
 	err := decoder.Decode(&glu)
 	if err == nil {
-		return &glu
-	} else {
-		return nil
+		return &glu[0]
 	}
+
+	l4g.Error("failed to decode user data: %v", err)
+
+	return nil
 }
 
 func (glu *ElionUser) ToJson() string {
 	b, err := json.Marshal(glu)
 	if err != nil {
 		return ""
-	} else {
-		return string(b)
 	}
+	return string(b)
 }
 
 func (glu *ElionUser) IsValid() bool {
-	if glu.Id == 0 {
+	if len(glu.Username) == 0 {
 		return false
 	}
 
@@ -86,7 +108,7 @@ func (glu *ElionUser) IsValid() bool {
 }
 
 func (glu *ElionUser) getAuthData() string {
-	return strconv.FormatInt(glu.Id, 10)
+	return glu.Username
 }
 
 func (m *ElionProvider) GetIdentifier() string {
@@ -95,7 +117,7 @@ func (m *ElionProvider) GetIdentifier() string {
 
 func (m *ElionProvider) GetUserFromJson(data io.Reader) *model.User {
 	glu := elionUserFromJson(data)
-	if glu.IsValid() {
+	if glu != nil && glu.IsValid() {
 		return userFromElionUser(glu)
 	}
 
@@ -105,7 +127,7 @@ func (m *ElionProvider) GetUserFromJson(data io.Reader) *model.User {
 func (m *ElionProvider) GetAuthDataFromJson(data io.Reader) string {
 	glu := elionUserFromJson(data)
 
-	if glu.IsValid() {
+	if glu != nil && glu.IsValid() {
 		return glu.getAuthData()
 	}
 
