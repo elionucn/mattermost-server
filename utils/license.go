@@ -31,12 +31,12 @@ func ValidateLicense(signed []byte) (bool, string) {
 
 	// _, err := base64.StdEncoding.Decode(decoded, signed)
 	// if err != nil {
-	// 	l4g.Error(T("utils.license.validate_license.decode.error"), err.Error())
+	// 	mlog.Error(T("utils.license.validate_license.decode.error"), err.Error())
 	// 	return false, ""
 	// }
 
 	// if len(decoded) <= 256 {
-	// 	l4g.Error(T("utils.license.validate_license.not_long.error"))
+	// 	mlog.Error(T("utils.license.validate_license.not_long.error"))
 	// 	return false, ""
 	// }
 
@@ -52,7 +52,7 @@ func ValidateLicense(signed []byte) (bool, string) {
 
 	// public, err := x509.ParsePKIXPublicKey(block.Bytes)
 	// if err != nil {
-	// 	l4g.Error(T("utils.license.validate_license.signing.error"), err.Error())
+	// 	mlog.Error(T("utils.license.validate_license.signing.error"), err.Error())
 	// 	return false, ""
 	// }
 
@@ -64,7 +64,7 @@ func ValidateLicense(signed []byte) (bool, string) {
 
 	// err = rsa.VerifyPKCS1v15(rsaPublic, crypto.SHA512, d, signature)
 	// if err != nil {
-	// 	l4g.Error(T("utils.license.validate_license.invalid.error"), err.Error())
+	// 	mlog.Error(T("utils.license.validate_license.invalid.error"), err.Error())
 	// 	return false, ""
 	// }
 
@@ -86,7 +86,7 @@ func GetAndValidateLicenseFileFromDisk(location string) (*model.License, []byte)
 		mlog.Error(fmt.Sprintf("Found license key at %v but it appears to be invalid.", fileName))
 		return nil, nil
 	} else {
-		l4g.Debug("Valid license, reading file...")
+		mlog.Debug("Valid license, reading file...")
 		return model.LicenseFromJson(strings.NewReader(licenseStr)), licenseBytes
 	}
 }
