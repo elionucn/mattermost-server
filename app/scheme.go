@@ -5,6 +5,7 @@ package app
 
 import (
 	"github.com/mattermost/mattermost-server/model"
+	"github.com/mattermost/mattermost-server/store"
 )
 
 func (a *App) GetScheme(id string) (*model.Scheme, *model.AppError) {
@@ -116,4 +117,16 @@ func (a *App) IsPhase2MigrationCompleted() *model.AppError {
 	}
 
 	return nil
+}
+
+func (a *App) SchemeGenerator(batchSize int) func() []*model.Scheme {
+	offset := 0
+	return func() []*model.Scheme {
+		var result store.StoreResult
+		if result = <-a.Srv.Store.Scheme().GetAllPage("", offset, batchSize); result.Err != nil {
+			return []*model.Scheme{}
+		}
+		offset += batchSize
+		return result.Data.([]*model.Scheme)
+	}
 }
